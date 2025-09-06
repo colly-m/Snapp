@@ -1,5 +1,5 @@
 #[starknet::interface]
-trait ICounter<T> {
+pub trait ICounter<T> {
     fn get_counter(self: @T) -> u32;
     fn increase_counter(ref self: T);
     fn decrease_counter(ref self: T);
@@ -8,13 +8,14 @@ trait ICounter<T> {
 }
 
 #[starknet::contract]
-mod CounterContract {
+pub mod CounterContract {
     use OwnableComponent::InternalTrait;
-use super::ICounter;
+	use super::ICounter;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use starknet::{ContractAddress, get_caller_address, get_contract_address};
     use openzeppelin_access::ownable::OwnableComponent;
     use openzeppelin_token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
+	use contracts::utils::{ strk_address, strk_to_fri};
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
 
@@ -24,27 +25,27 @@ use super::ICounter;
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
-	CounterChanged: CounterChanged,
-	#[flat]
-	OwnableEvent: OwnableComponent::Event,
+    pub enum Event {
+		CounterChanged: CounterChanged,
+		#[flat]
+		OwnableEvent: OwnableComponent::Event,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct CounterChanged {
-	#[key]
-	caller: ContractAddress,
-	old_value: u32,
-	new_value: u32,
-	reason: ChangeReason,
+    pub struct CounterChanged {
+		#[key]
+		pub caller: ContractAddress,
+		pub old_value: u32,
+		pub new_value: u32,
+		pub reason: ChangeReason,
     }
 
     #[derive(Drop, Copy, Serde)]
-    enum ChangeReason {
-	Increase,
-	Decrease,
-	Reset,
-	Set,
+    pub enum ChangeReason {
+		Increase,
+		Decrease,
+		Reset,
+		Set,
     }
 
     #[storage]
@@ -106,8 +107,8 @@ use super::ICounter;
 	}
 
 	fn reset_counter(ref self: ContractState) {
-	    let payment_amount: u256 = 1000000000000000000;
-	    let strk_token: ContractAddress = 0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d.try_into().unwrap();
+	    let payment_amount: u256 = strk_to_fri(1); // 1 STRK in FRI decimals
+	    let strk_token: ContractAddress = strk_address();
 	    let caller = get_caller_address();
 	    let contract = get_contract_address();
 
