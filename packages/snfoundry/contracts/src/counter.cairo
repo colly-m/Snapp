@@ -10,12 +10,12 @@ pub trait ICounter<T> {
 #[starknet::contract]
 pub mod CounterContract {
     use OwnableComponent::InternalTrait;
-	use super::ICounter;
+    use super::ICounter;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use starknet::{ContractAddress, get_caller_address, get_contract_address};
     use openzeppelin_access::ownable::OwnableComponent;
     use openzeppelin_token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
-	use contracts::utils::{ strk_address, strk_to_fri};
+    use contracts::utils::{ strk_address, strk_to_fri};
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
 
